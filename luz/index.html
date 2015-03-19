@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width. user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<link rel="stylesheet" href="css/materialize.css">
+	<title>Seleccion archivo HTML5</title>
+	<script>
+		window.addEventListener('load', init);
+		var totalDatos = new Array();
+		var totalDatosDos = new Array();
+		var aarr = new Array();
+
+		function init(){
+			var campoTexto = document.getElementById('archivo');
+			campoTexto.addEventListener('change',lecturaArchivo,false);
+		}
+
+		function lecturaArchivo(event){
+			var archivo = event.target.files;
+			var reader = new FileReader();
+			reader.addEventListener('load',procesarArchivo,false);
+			reader.readAsText(archivo[0]);	
+		}
+
+		function procesarArchivo(event){
+			
+			var contenido = event.target.result;
+			var datos = contenido.split("\n");
+			var arr =  new Array();
+			var active=0,reactive=0,voltage=0,intensity=0,sub1=0,sub2=0,sub3=0;
+			var contador=0, indice=0;
+
+			for (var i = 0; i < datos.length; i++) {
+				arr[i] = datos[i].split(";");
+			};
+			
+			for (var i = 1; i < arr.length; i++) {
+				
+				contador++;
+				
+				totalDatos[i] = arr[i];
+
+				active+=parseFloat(totalDatos[i][2]);
+				active.toFixed(2);
+				reactive+=parseFloat(totalDatos[i][3]);
+				voltage+=parseFloat(totalDatos[i][4]);
+				intensity+=parseFloat(totalDatos[i][5]);
+				sub1+=parseFloat(totalDatos[i][6]);
+				sub2+=parseFloat(totalDatos[i][7]);
+				sub3+=parseFloat(totalDatos[i][8]);
+				
+				if(contador==60){
+
+					aarr.push(totalDatos[i][0],totalDatos[i][1],active.toFixed(2),reactive.toFixed(2),voltage.toFixed(2),intensity.toFixed(2),sub1,sub2,sub3);
+
+					totalDatosDos[indice] = aarr;
+					active=0,reactive=0,voltage=0,intensity=0,sub1=0,sub2=0,sub3=0,contador=0;
+					indice++;
+					aarr=[];
+				}	 
+			};
+
+			
+			for (var i = 0; i < totalDatosDos.length; i++) {
+				$(".contenido").append("<tr><td>"+(i+1)+"</td><td>"+ totalDatosDos[i][0]+"</td><td>"+ totalDatosDos[i][1]+"</td><td>"+ totalDatosDos[i][2]+"</td><td>"+ totalDatosDos[i][3]+"</td><td>"+ totalDatosDos[i][4]+"</td><td>"+ totalDatosDos[i][5]+"</td><td>"+ totalDatosDos[i][6]+"</td><td>"+ totalDatosDos[i][7]+"</td><td>"+ totalDatosDos[i][8]+"</td></tr>");
+			};
+		}
+	</script>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+
+			<div class="col s12">
+				<h3>Seleccione el archivo que desea leer</h3>
+		
+				<form action="#">
+		    		<div class="file-field input-field">
+		      			<input class="file-path validate" type="text"/>
+		      			<div class="btn">
+		        			<span>File</span>
+		        			<input type="file" name="archivo" id="archivo" />
+		      			</div>
+		    		</div>
+		  		</form>	
+			</div>
+			
+	  		<br>
+	  		<div class="col s12">
+	  			
+	  			<table class="striped centered responvive-table">
+	  				<thead>
+	  					<tr>
+	  						<th>No</th>
+	  						<th>Date</th>
+	  						<th>Time</th>
+	  						<th>Global active power</th>
+	  						<th>Global reactive power</th>
+	  						<th>Voltage</th>
+	  						<th>Global intensity</th>
+	  						<th>Sub metering 1</th>
+	  						<th>Sub metering 2</th>
+	  						<th>Sub metering 3</th>
+	  					</tr>
+	  				</thead>
+					<tbody class="contenido">
+					</tbody>
+	  			</table>	
+	  		</div>
+	  	</div>
+	</div>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+      <script type="text/javascript" src="js/materialize.min.js"></script>
+</body>
+</html>
